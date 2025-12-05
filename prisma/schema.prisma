@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(VIEWER)
+  provider  Provider @default(LOCAL)
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articles  Article[]
+  versions  Version[]
+  comments  Comment[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum Provider {
+  LOCAL
+  GOOGLE
+  AZURE
+}
+
+model Article {
+  id          String      @id @default(uuid())
+  title       String
+  content     String
+  slug        String      @unique
+  status      Status      @default(DRAFT)
+  author      User        @relation(fields: [authorId], references: [id])
+  authorId    String
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  versions    Version[]
+  comments    Comment[]
+  tags        Tag[]       @@ignore
+  ArticleTag  ArticleTag[]
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String
+  description String?
+  parent    Category?  @relation(name: "CategoryParent", fields: [parentId], references: [id])
+  parentId  String?
+  children  Category[] @relation(name: "CategoryParent")
+  articles  Article[]
+  createdAt DateTime   @default(now())
+}
+
+model Tag {
+  id         String       @id @default(uuid())
+  name       String
+  color      String?
+  articles   Article[]    @@ignore
+  ArticleTag ArticleTag[]
+  createdAt  DateTime     @default(now())
+}
+
+model ArticleTag {
+  article    Article  @relation(fields: [articleId], references: [id])
+  articleId  String
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  tagId      String
+  @@id([articleId, tagId])
+}
+
+model Version {
+  id        String   @id @default(uuid())
+  content   String
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  article   Article  @relation(fields: [articleId], references: [id])
+  articleId String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  parent    Comment? @relation(name: "CommentParent", fields: [parentId], references: [id])
+  parentId  String?
+  replies   Comment[] @relation(name: "CommentParent")
+  createdAt DateTime @default(now())
+}
