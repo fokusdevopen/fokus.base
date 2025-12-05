@@ -2,7 +2,7 @@
   "name": "FOKUS.BASE",
   "short_name": "FOKUS",
   "description": "Private, self-hosted knowledge base for internal company use",
-  "start_url": "/",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0A66C2",

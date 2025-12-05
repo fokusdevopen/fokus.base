@@ -3,11 +3,13 @@
 const CACHE_NAME = 'fokus-base-v1'
 const urlsToCache = [
   '/',
+  '/index.html',
   '/dashboard',
   '/articles',
   '/articles/create',
   '/graph',
   '/offline',
+  '/offline.html',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
 ]
